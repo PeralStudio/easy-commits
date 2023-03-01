@@ -120,6 +120,6 @@ text({
     message: colors.green("✔️ Push realizado con éxito."),
 });
 
-outro(colors.green("👏¡Gracias por usar este asistente!"));
+outro(colors.green("👏 ¡Gracias por usar este asistente!"));
 
 process.exit(0);
