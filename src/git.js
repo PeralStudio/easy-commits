@@ -26,7 +26,7 @@ export async function gitAdd({ files = [] } = {}) {
     return cleanStdout(stdout);
 }
 
-export async function gitPush(branch = "master") {
-    const { stdout } = await execAsync(`git push -u origin ${branch}`);
+export async function gitPush() {
+    const { stdout } = await execAsync(`git push -u origin ${"master" || "main"}`);
     return cleanStdout(stdout);
 }
