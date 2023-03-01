@@ -2,7 +2,7 @@ import { intro, outro, text, select, confirm, multiselect, isCancel } from "@cla
 import { COMMIT_TYPES } from "./commitTypes.js";
 import colors from "picocolors";
 import { exitProgram } from "./utils.js";
-import { getChangedFiles, getStagedFiles, gitAdd, gitCommit } from "./git.js";
+import { getChangedFiles, getStagedFiles, gitAdd, gitCommit, gitPush } from "./git.js";
 import { trytm } from "@bdsqqq/try";
 
 intro(
@@ -89,6 +89,7 @@ if (!shouldContinue) {
 await text({
     message: colors.green("✔️ Commit creado con éxito."),
 });
+
 await gitCommit({ commit });
 
 const pushCommit = await confirm({
@@ -97,5 +98,7 @@ const pushCommit = await confirm({
 
         ${colors.green(colors.bold(commit))}\n\n${colors.cyan("¿Confirmas?")}`,
 });
+
+await gitPush({ pushCommit });
 
 outro(colors.green("✔️ Commit creado con éxito. ¡Gracias por usar este asistente!"));
