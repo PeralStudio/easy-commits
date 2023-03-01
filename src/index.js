@@ -99,6 +99,6 @@ const pushCommit = await confirm({
         ${colors.green(colors.bold(commit))}\n\n${colors.cyan("¿Confirmas?")}`,
 });
 
-await gitPush();
+await gitPush({ pushCommit });
 
 outro(colors.green("✔️ Commit creado con éxito. ¡Gracias por usar este asistente!"));
