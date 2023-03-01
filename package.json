@@ -1,6 +1,6 @@
 {
   "name": "easy-commits",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Commit CLI",
   "type": "module",
   "bin": {
@@ -15,7 +15,15 @@
     "type": "git",
     "url": "https://github.com/PeralStudio/easy-commits"
   },
-  "keywords": [],
+  "keywords": [
+    "terminal",
+    "cli",
+    "command",
+    "prompts",
+    "console",
+    "git",
+    "commit"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
