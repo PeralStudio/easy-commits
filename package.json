@@ -1,15 +1,22 @@
 {
   "name": "peralcommits",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Commit CLI",
   "type": "module",
+  "bin": {
+    "peralcommits": "./src/bin.js"
+  },
   "main": "index.js",
   "scripts": {
+    "co": "peralcommits",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "miduco": "file://."
+  },
   "dependencies": {
     "@bdsqqq/try": "2.3.1",
     "@clack/prompts": "0.6.1",
