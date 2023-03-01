@@ -1,7 +1,7 @@
 {
-  "name": "peralstudiocommits",
+  "name": "peralcommits",
   "version": "1.0.0",
-  "description": "",
+  "description": "Commit CLI",
   "type": "module",
   "main": "index.js",
   "scripts": {
