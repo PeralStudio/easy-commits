@@ -1,6 +1,6 @@
 {
   "name": "easy-commits",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Commit CLI",
   "type": "module",
   "bin": {
@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "miduco": "file://."
+    "easy-commits": "file://."
   },
   "dependencies": {
     "@bdsqqq/try": "2.3.1",
