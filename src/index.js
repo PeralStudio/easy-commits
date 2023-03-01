@@ -1,6 +1,7 @@
-import { intro, outro, text, select, confirm, multiselect } from "@clack/prompts";
+import { intro, outro, text, select, confirm, multiselect, isCancel } from "@clack/prompts";
 import { COMMIT_TYPES } from "./commitTypes.js";
 import colors from "picocolors";
+import { exitProgram } from "./utils.js";
 import { getChangedFiles, getStagedFiles, gitAdd, gitCommit } from "./git.js";
 import { trytm } from "@bdsqqq/try";
 
@@ -28,6 +29,7 @@ if (stagedFiles.length === 0 && changedFiles.length > 0) {
             label: file,
         })),
     });
+
     await gitAdd({ files });
 }
 
@@ -52,6 +54,8 @@ const commitMessage = await text({
         }
     },
 });
+
+if (isCancel(commitMessage)) exitProgram();
 
 const { emoji, release } = COMMIT_TYPES[commitType];
 
@@ -82,6 +86,6 @@ if (!shouldContinue) {
     process.exit(0);
 }
 
-await gitCommit(commit);
+await gitCommit({ commit });
 
 outro(colors.green("✔️ Commit creado con éxito. ¡Gracias por usar este asistente!"));
