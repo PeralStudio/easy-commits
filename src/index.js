@@ -108,3 +108,5 @@ text({
 });
 
 outro(colors.green("✔️ Commit creado con éxito. ¡Gracias por usar este asistente!"));
+
+process.exit(0);
