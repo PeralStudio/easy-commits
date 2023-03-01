@@ -114,6 +114,11 @@ const pushCommit = await confirm({
 
 if (isCancel(pushCommit)) exitProgram();
 
+if (!pushCommit) {
+    outro(colors.yellow("Push cancelado"));
+    process.exit(0);
+}
+
 await gitPush();
 
 text({
