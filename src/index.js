@@ -86,7 +86,7 @@ if (!shouldContinue) {
     process.exit(0);
 }
 
-await text({
+text({
     message: colors.green("✔️ Commit creado con éxito."),
 });
 
@@ -94,11 +94,15 @@ await gitCommit({ commit });
 
 const pushCommit = await confirm({
     initialValue: true,
-    message: `${colors.cyan("¿Quieres hacer push a main?")}
+    message: `${colors.cyan("¿Quieres hacer push?")}
 
         ${colors.green(colors.bold(commit))}\n\n${colors.cyan("¿Confirmas?")}`,
 });
 
 await gitPush();
+
+text({
+    message: colors.green("✔️ Push realizado con éxito."),
+});
 
 outro(colors.green("✔️ Commit creado con éxito. ¡Gracias por usar este asistente!"));
