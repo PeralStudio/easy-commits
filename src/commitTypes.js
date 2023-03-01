@@ -1,17 +1,22 @@
 export const COMMIT_TYPES = {
     feat: {
-        emoji: "🆕",
+        emoji: "✨",
         description: "Add new feature",
         release: true,
     },
     fix: {
-        emoji: "🔧",
+        emoji: "🐛",
         description: "Fix bug",
         release: true,
     },
     perf: {
         emoji: "⚡",
         description: "Improve performance",
+        release: true,
+    },
+    style: {
+        emoji: "💎",
+        description: "Style change",
         release: true,
     },
     refactor: {
