@@ -30,6 +30,8 @@ if (stagedFiles.length === 0 && changedFiles.length > 0) {
         })),
     });
 
+    if (isCancel(files)) exitProgram();
+
     await gitAdd({ files });
 }
 
@@ -40,6 +42,8 @@ const commitType = await select({
         label: `${value.emoji} ${key.padEnd(10, " ")} · ${value.description} `,
     })),
 });
+
+if (isCancel(commitType)) exitProgram();
 
 const commitMessage = await text({
     message: colors.cyan("Introduce el mensaje del commit:"),
@@ -69,6 +73,8 @@ if (release) {
             )}\n`
         ),
     });
+
+    if (isCancel(breakingChange)) exitProgram();
 }
 
 let commit = `${emoji} ${commitType} : ${commitMessage}`;
@@ -80,6 +86,8 @@ const shouldContinue = await confirm({
 
         ${colors.green(colors.bold(commit))}\n\n${colors.cyan("¿Confirmas?")}`,
 });
+
+if (isCancel(shouldContinue)) exitProgram();
 
 if (!shouldContinue) {
     outro(colors.yellow("Commit cancelado"));
@@ -99,9 +107,9 @@ const pushCommit = await confirm({
         ${colors.green(colors.bold(commit))}\n\n${colors.cyan("¿Confirmas?")}`,
 });
 
-await gitPush().then((res) => {
-    console.log(res);
-});
+if (isCancel(pushCommit)) exitProgram();
+
+await gitPush();
 
 text({
     message: colors.green("✔️ Push realizado con éxito."),
