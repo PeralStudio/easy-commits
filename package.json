@@ -1,14 +1,14 @@
 {
-  "name": "peralcommits",
-  "version": "1.0.5",
+  "name": "easy-commits",
+  "version": "1.0.1",
   "description": "Commit CLI",
   "type": "module",
   "bin": {
-    "peralcommits": "./src/bin.js"
+    "easy-commits": "./src/bin.js"
   },
   "main": "index.js",
   "scripts": {
-    "co": "peralcommits",
+    "co": "easy-commits",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
