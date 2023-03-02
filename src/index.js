@@ -15,6 +15,8 @@ const languajeSelected = await multiselect({
     })),
 });
 
+if (isCancel(languajeSelected)) exitProgram(languajeSelected[0]);
+
 const [changedFiles, errorChangedFiles] = await trytm(getChangedFiles());
 const [stagedFiles, errorStagedFiles] = await trytm(getStagedFiles());
 
@@ -53,7 +55,7 @@ if (stagedFiles.length === 0 && changedFiles.length > 0) {
         })),
     });
 
-    if (isCancel(files)) exitProgram();
+    if (isCancel(files)) exitProgram(languajeSelected[0]);
 
     await gitAdd({ files });
 }
@@ -72,7 +74,7 @@ const commitType = await select({
     })),
 });
 
-if (isCancel(commitType)) exitProgram();
+if (isCancel(commitType)) exitProgram(languajeSelected[0]);
 
 const commitMessage = await text({
     message: colors.cyan(
@@ -100,7 +102,7 @@ const commitMessage = await text({
     },
 });
 
-if (isCancel(commitMessage)) exitProgram();
+if (isCancel(commitMessage)) exitProgram(languajeSelected[0]);
 
 const { emoji, release } = COMMIT_TYPES[commitType];
 
@@ -122,7 +124,7 @@ if (release) {
                   ),
     });
 
-    if (isCancel(breakingChange)) exitProgram();
+    if (isCancel(breakingChange)) exitProgram(languajeSelected[0]);
 }
 
 let commit = `${emoji} ${commitType} : ${commitMessage}`;
@@ -141,7 +143,7 @@ const shouldContinue = await confirm({
     )}`,
 });
 
-if (isCancel(shouldContinue)) exitProgram();
+if (isCancel(shouldContinue)) exitProgram(languajeSelected[0]);
 
 if (!shouldContinue) {
     outro(
@@ -171,7 +173,7 @@ const pushCommit = await confirm({
     )}`,
 });
 
-if (isCancel(pushCommit)) exitProgram();
+if (isCancel(pushCommit)) exitProgram(languajeSelected[0]);
 
 if (!pushCommit) {
     outro(colors.yellow(languajeSelected[0] === "Spanish" ? "Push cancelado" : "Push canceled"));

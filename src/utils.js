@@ -1,9 +1,9 @@
 import { outro } from "@clack/prompts";
 import colors from "picocolors";
 
-export function exitProgram({ code = 0, message = "Commit cancelado." } = {}) {
-    outro(colors.yellow(message));
-    process.exit(code);
+export function exitProgram(lang) {
+    outro(colors.yellow(lang === "Spanish" ? "Commit cancelado" : "Commit canceled"));
+    process.exit(0);
 }
 
 export const languajes = ["Spanish", "English"];
