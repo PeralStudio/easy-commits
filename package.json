@@ -1,6 +1,6 @@
 {
   "name": "easy-commits",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Git Commit CLI is an npm package that allows you to easily and quickly create commits in your Git repository from the command line.",
   "type": "module",
   "bin": {
