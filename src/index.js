@@ -7,6 +7,16 @@ import { trytm } from "@bdsqqq/try";
 
 intro(colors.inverse(`Assistant for commit creation created by ${colors.yellow("Alberto Peral")}`));
 
+const languajeSelected = await multiselect({
+    message: colors.cyan("Choose language"),
+    options: languajes.map((lang) => ({
+        value: lang,
+        label: lang,
+    })),
+});
+
+if (isCancel(languajeSelected)) exitProgram(languajeSelected[0]);
+
 const [changedFiles, errorChangedFiles] = await trytm(getChangedFiles());
 const [stagedFiles, errorStagedFiles] = await trytm(getStagedFiles());
 
@@ -31,16 +41,6 @@ if (changedFiles.length <= 0) {
     );
     process.exit(1);
 }
-
-const languajeSelected = await multiselect({
-    message: colors.cyan("Choose language"),
-    options: languajes.map((lang) => ({
-        value: lang,
-        label: lang,
-    })),
-});
-
-if (isCancel(languajeSelected)) exitProgram(languajeSelected[0]);
 
 if (stagedFiles.length === 0 && changedFiles.length > 0) {
     const files = await multiselect({
