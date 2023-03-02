@@ -64,7 +64,7 @@ const commitType = await select({
     message: colors.cyan(
         languajeSelected[0] === "Spanish"
             ? "Selecciona el tipo de commit"
-            : "Select the type of commit "
+            : "Select the type of commit"
     ),
     options: Object.entries(COMMIT_TYPES).map(([key, value]) => ({
         value: key,
