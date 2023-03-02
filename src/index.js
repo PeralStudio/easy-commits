@@ -167,7 +167,7 @@ const pushCommit = await confirm({
     )}
 
         ${colors.green(colors.bold(commit))}\n\n${colors.cyan(
-        languajeSelected[0] === "Spanish" ? "Commit cancelado" : "Commit canceled"
+        languajeSelected[0] === "Spanish" ? "¿Confirmas?" : "Confirm?"
     )}`,
 });
 
