@@ -2,7 +2,7 @@
 
 -   Git Commit CLI is an npm package that allows you to easily and quickly create commits in your Git repository from the command line.
 
-![easy-commits](https://github.com/PeralStudio/easy-commits/blob/master/img/1.png)
+![easy-commits](https://raw.githubusercontent.com/PeralStudio/easy-commits/master/img/test.gif)
 
 ## Installation
 
