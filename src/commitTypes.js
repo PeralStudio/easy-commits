@@ -7,12 +7,13 @@ export const COMMIT_TYPES = {
     },
     fix: {
         emoji: "🐛",
+        descriptionEsp: "Corregir error",
         description: "Fix bug ",
         release: true,
     },
     perf: {
         emoji: "⚡",
-        descriptionEsp: "Corregir error",
+        descriptionEsp: "Mejora rendimiento",
         description: "Improve performance",
         release: true,
     },
