@@ -100,7 +100,7 @@ if (!shouldContinue) {
 }
 
 text({
-    message: colors.green("✔️ Commit creado con éxito."),
+    message: colors.green("✔️ Commit creado con éxito"),
 });
 
 await gitCommit({ commit });
