@@ -74,7 +74,7 @@ export function colorForType(colorName) {
         magenta: colors.magenta,
         blue: colors.blue,
         white: colors.white,
-        dim: colors.dim,
+        dim: colors.dim
     };
     return map[colorName] || colors.white;
 }
@@ -86,9 +86,9 @@ export function banner(version) {
         colors.cyan("  ║") +
             colors.bold(colors.green("        🚀 EASY COMMITS ")) +
             colors.dim(`v${version}`) +
-            colors.cyan("      ║"),
+            colors.cyan("     ║"),
         colors.cyan("  ╚═══════════════════════════════════╝"),
-        "",
+        ""
     ];
     console.log(lines.join("\n"));
 }

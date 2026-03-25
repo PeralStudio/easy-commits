@@ -3,7 +3,7 @@ import { promisify } from "node:util";
 
 const execAsync = promisify(exec);
 
-const cleanStdout = (out) => out.trim().split("\n").filter(Boolean);
+const cleanStdout = (out) => out.split("\n").filter(Boolean);
 
 export async function getChangedFiles() {
     const { stdout } = await execAsync("git status --porcelain");
