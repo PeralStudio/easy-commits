@@ -1,29 +1,39 @@
-import { intro, outro, text, select, confirm, multiselect, isCancel } from "@clack/prompts";
+import { intro, outro, text, select, confirm, multiselect, isCancel, spinner, note } from "@clack/prompts";
 import { COMMIT_TYPES } from "./commitTypes.js";
 import colors from "picocolors";
-import { exitProgram, languajes } from "./utils.js";
-import { getChangedFiles, getStagedFiles, gitAdd, gitCommit, gitPush } from "./git.js";
+import { exitProgram, languages, getVersion, banner, getFileStatusLabel, boxMessage, colorForType } from "./utils.js";
+import { getChangedFiles, getStagedFiles, gitAdd, gitCommit, gitPush, getCurrentBranch } from "./git.js";
 import { trytm } from "@bdsqqq/try";
 
-intro(colors.inverse(`Assistant for commit creation created by ${colors.yellow("Alberto Peral")}`));
+const version = getVersion();
+banner(version);
 
-const languajeSelected = await multiselect({
-    message: colors.cyan("Choose language"),
-    options: languajes.map((lang) => ({
+intro(colors.dim(`Assistant for commit creation by Alberto Peral`));
+
+const selectedLangRes = await select({
+    message: colors.cyan("Choose language / Elige idioma"),
+    options: languages.map((lang) => ({
         value: lang,
         label: lang,
     })),
 });
 
-if (isCancel(languajeSelected)) exitProgram(languajeSelected[0]);
+if (isCancel(selectedLangRes)) exitProgram("English");
+const lang = selectedLangRes;
+
+const s = spinner();
+s.start(lang === "Spanish" ? "Analizando repositorio..." : "Analyzing repository...");
 
 const [changedFiles, errorChangedFiles] = await trytm(getChangedFiles());
 const [stagedFiles, errorStagedFiles] = await trytm(getStagedFiles());
+const [branch] = await trytm(getCurrentBranch());
+
+s.stop(lang === "Spanish" ? "Análisis completado" : "Analysis completed");
 
 if (errorChangedFiles ?? errorStagedFiles) {
     outro(
         colors.red(
-            languajeSelected[0] === "Spanish"
+            lang === "Spanish"
                 ? "Error: Comprueba que estas en un repositorio git válido"
                 : "Error: Make sure you're in a valid git repository."
         )
@@ -34,7 +44,7 @@ if (errorChangedFiles ?? errorStagedFiles) {
 if (changedFiles.length <= 0) {
     outro(
         colors.red(
-            languajeSelected[0] === "Spanish"
+            lang === "Spanish"
                 ? "No hay cambios para hacer commit"
                 : "There are no changes to commit"
         )
@@ -45,48 +55,57 @@ if (changedFiles.length <= 0) {
 if (stagedFiles.length === 0 && changedFiles.length > 0) {
     const files = await multiselect({
         message: colors.cyan(
-            languajeSelected[0] === "Spanish"
-                ? "No tienes ningun commit preparado. Por favor selecciona los archivos que quieres añadir a commit"
-                : "You don't have any commit prepared. Please select the files you want to add to the commit"
+            lang === "Spanish"
+                ? "Selecciona los archivos para añadir al commit:"
+                : "Select the files to add to the commit:"
         ),
         options: changedFiles.map((file) => ({
-            value: file,
-            label: file,
+            value: file.name,
+            label: getFileStatusLabel(file),
         })),
     });
 
-    if (isCancel(files)) exitProgram(languajeSelected[0]);
+    if (isCancel(files)) exitProgram(lang);
 
+    s.start(lang === "Spanish" ? "Preparando archivos..." : "Staging files...");
     await gitAdd({ files });
+    s.stop(lang === "Spanish" ? "Archivos preparados" : "Files staged");
 }
+
+note(
+    lang === "Spanish"
+        ? "Configuración del Mensaje"
+        : "Message Configuration",
+    "--------"
+);
 
 const commitType = await select({
     message: colors.cyan(
-        languajeSelected[0] === "Spanish"
+        lang === "Spanish"
             ? "Selecciona el tipo de commit"
             : "Select the type of commit"
     ),
     options: Object.entries(COMMIT_TYPES).map(([key, value]) => ({
         value: key,
-        label: `${value.emoji} ${key.padEnd(10, " ")} · ${
-            languajeSelected[0] === "Spanish" ? value.descriptionEsp : value.description
+        label: `${value.emoji} ${colorForType(value.color)(key.padEnd(10, " "))} · ${
+            lang === "Spanish" ? value.descriptionEsp : value.description
         }`,
     })),
 });
 
-if (isCancel(commitType)) exitProgram(languajeSelected[0]);
+if (isCancel(commitType)) exitProgram(lang);
 
 const commitMessage = await text({
     message: colors.cyan(
-        languajeSelected[0] === "Spanish"
+        lang === "Spanish"
             ? "Introduce el mensaje del commit:"
             : "Enter the commit message:"
     ),
-    placeholder: "commit message:",
+    placeholder: "e.g. add new validation logic",
     validate: (value) => {
         if (value.length === 0) {
             return colors.red(
-                languajeSelected[0] === "Spanish"
+                lang === "Spanish"
                     ? "El mensaje del commit no puede estar vacío"
                     : "The commit message cannot be empty"
             );
@@ -94,7 +113,7 @@ const commitMessage = await text({
 
         if (value.length > 50) {
             return colors.red(
-                languajeSelected[0] === "Spanish"
+                lang === "Spanish"
                     ? "El mensaje del commit no puede superar los 50 caracteres"
                     : "The commit message cannot exceed 50 characters"
             );
@@ -102,99 +121,88 @@ const commitMessage = await text({
     },
 });
 
-if (isCancel(commitMessage)) exitProgram(languajeSelected[0]);
+if (isCancel(commitMessage)) exitProgram(lang);
 
-const { emoji, release } = COMMIT_TYPES[commitType];
+const { emoji, release, color } = COMMIT_TYPES[commitType];
 
 let breakingChange = false;
 if (release) {
     breakingChange = await confirm({
         initialValue: false,
         message:
-            languajeSelected[0] === "Spanish"
+            lang === "Spanish"
                 ? colors.cyan(
-                      `¿Tiene este commit cambios que rompen la compatibilidad anterior?\n  ${colors.yellow(
-                          'Si la respuesta es sí, deberias crear un commit con el tipo "BREAKING CHANGE" y al hacer release se publicara la versión major'
-                      )}\n`
+                      `¿Tiene cambios que rompen la compatibilidad?`
                   )
                 : colors.cyan(
-                      `Does this commit have changes that break backward compatibility?\n  ${colors.yellow(
-                          'If the answer is yes, you should create a commit with type "BREAKING CHANGE", and upon release, the major version will be published'
-                      )}\n`
+                      `Does this have breaking changes?`
                   ),
     });
 
-    if (isCancel(breakingChange)) exitProgram(languajeSelected[0]);
+    if (isCancel(breakingChange)) exitProgram(lang);
 }
 
 let commit = `${emoji} ${commitType} : ${commitMessage}`;
-commit = breakingChange ? `${commit} ${colors.red("[BREAKING CHANGE]")}` : commit;
+if (breakingChange) {
+    commit = `${commit} ${colors.red("[BREAKING CHANGE]")}`;
+}
+
+const previewLines = [
+    colors.bold(lang === "Spanish" ? "Resumen del Commit:" : "Commit Summary:"),
+    "",
+    `${emoji} ${colorForType(color)(commitType)}: ${commitMessage}`,
+    breakingChange ? colors.red(" [BREAKING CHANGE]") : "",
+    colors.dim(`Branch: ${branch || "unknown"}`),
+];
 
 const shouldContinue = await confirm({
     initialValue: true,
-    message: `${colors.cyan(
-        languajeSelected[0] === "Spanish"
-            ? "¿Quieres crear el commit con el siguiente mensaje?"
-            : "Do you want to create the commit with the following message?"
-    )}
-
-        ${colors.green(colors.bold(commit))}\n\n${colors.cyan(
-        languajeSelected[0] === "Spanish" ? "¿Confirmas?" : "Confirm?"
+    message: `\n${boxMessage(previewLines)}\n\n${colors.cyan(
+        lang === "Spanish" ? "¿Confirmas la creación?" : "Confirm creation?"
     )}`,
 });
 
-if (isCancel(shouldContinue)) exitProgram(languajeSelected[0]);
+if (isCancel(shouldContinue) || !shouldContinue) exitProgram(lang);
 
-if (!shouldContinue) {
-    outro(
-        colors.yellow(languajeSelected[0] === "Spanish" ? "Commit cancelado" : "Commit canceled")
-    );
-    process.exit(0);
-}
-
-text({
-    message: colors.green(
-        languajeSelected[0] === "Spanish"
-            ? "✔️ Commit creado con éxito."
-            : "✔️ Commit created successfully."
-    ),
-});
-
+s.start(lang === "Spanish" ? "Creando commit..." : "Creating commit...");
 await gitCommit({ commit });
+s.stop(lang === "Spanish" ? "✔️ Commit creado con éxito" : "✔️ Commit created successfully");
 
 const pushCommit = await confirm({
     initialValue: true,
-    message: `${colors.cyan(
-        languajeSelected[0] === "Spanish" ? "¿Quieres hacer push?" : "Do you want to push?"
-    )}
-
-        ${colors.green(colors.bold(commit))}\n\n${colors.cyan(
-        languajeSelected[0] === "Spanish" ? "¿Confirmas?" : "Confirm?"
-    )}`,
-});
-
-if (isCancel(pushCommit)) exitProgram(languajeSelected[0]);
-
-if (!pushCommit) {
-    outro(colors.yellow(languajeSelected[0] === "Spanish" ? "Push cancelado" : "Push canceled"));
-    process.exit(0);
-}
-
-await gitPush();
-
-text({
-    message: colors.green(
-        languajeSelected[0] === "Spanish"
-            ? "✔️ Push realizado con éxito."
-            : "✔️ Push successfully executed."
+    message: colors.cyan(
+        lang === "Spanish" ? "¿Quieres hacer push ahora?" : "Do you want to push now?"
     ),
 });
 
+if (isCancel(pushCommit)) exitProgram(lang);
+
+if (pushCommit) {
+    s.start(lang === "Spanish" ? "Haciendo push..." : "Pushing changes...");
+    const [_, errorPush] = await trytm(gitPush());
+    if (errorPush) {
+        s.stop(colors.red("❌ Error en push"));
+        note(errorPush.message, "Error");
+    } else {
+        s.stop(lang === "Spanish" ? "✔️ Push realizado con éxito" : "✔️ Push successful");
+    }
+}
+
+const finalSummary = [
+    colors.green(colors.bold(lang === "Spanish" ? "¡Todo listo!" : "All set!")),
+    "",
+    `${colors.dim("Commit:")} ${commit}`,
+    `${colors.dim("Branch:")} ${branch}`,
+    `${colors.dim("Push:")} ${pushCommit ? "✅" : "❌"}`,
+];
+
+console.log("\n" + boxMessage(finalSummary));
+
 outro(
     colors.green(
-        languajeSelected[0] === "Spanish"
-            ? "👏 ¡Gracias por usar este asistente!"
-            : "👏 Thank you for using this assistant!"
+        lang === "Spanish"
+            ? "👏 ¡Gracias por usar Easy Commits!"
+            : "👏 Thank you for using Easy Commits!"
     )
 );
 
